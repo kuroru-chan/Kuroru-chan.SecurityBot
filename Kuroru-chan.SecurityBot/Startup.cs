@@ -34,11 +34,13 @@ namespace KuroruChan.SecurityBot
             {
                 //Under development mode, use long polling method to get updates
                 services.AddSingleton<IHostedService, LongPollingService>();
+                services.AddSingleton<IUpdateService, UpdateService>();
             }
             else
             {
                 //Under production mode, use mvc for webhook
                 services.AddMvc();
+                services.AddScoped<IUpdateService, UpdateService>();
             }
             //Add bot client
             services.AddSingleton<IBotService, BotService>();

@@ -14,9 +14,13 @@ namespace KuroruChan.SecurityBot.Services
     public class LongPollingService : BackgroundService
     {
         private readonly ILogger _logger;
-        public LongPollingService(ILogger<LongPollingService> logger)
+        private readonly IBotService _botService;
+        private readonly IUpdateService _updateService;
+        public LongPollingService(IBotService botService, IUpdateService updateService, ILogger<LongPollingService> logger)
         {
-            this._logger = logger;
+            _logger = logger;
+            _botService = botService;
+            _updateService = updateService;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -24,13 +28,21 @@ namespace KuroruChan.SecurityBot.Services
             try
             {
                 _logger.LogInformation("[DEBUG]Bot program is running under long polling mode");
-
-                while (!stoppingToken.IsCancellationRequested)
+                //Bind bot handler
+                _botService.Client.OnUpdate += async (sender, e) =>
                 {
-                    await Task.Delay(5000, stoppingToken);
                     _logger.LogInformation("[DEBUG]Pulling updates from Telegram");
-                }
-                _logger.LogInformation("[DEBUG]Exiting long polling mode");
+                    await _updateService.EchoAsync(e.Update);
+                };
+                //Start receiving
+                _botService.Client.StartReceiving();
+                await Task.FromCanceled(stoppingToken)
+                    .ContinueWith(task =>
+                    {
+                        //End receiving
+                        _logger.LogInformation("[DEBUG]Exiting long polling mode");
+                        _botService.Client.StopReceiving();
+                    });
             }
             catch (Exception ex)
             {
@@ -41,9 +53,9 @@ namespace KuroruChan.SecurityBot.Services
                 else
                 {
                     _logger.LogInformation("[DEBUG]Exiting long polling mode");
+                    _botService.Client.StopReceiving();
                 }
             }
         }
-
     }
 }
