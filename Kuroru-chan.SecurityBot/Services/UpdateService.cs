@@ -23,12 +23,18 @@ namespace KuroruChan.SecurityBot.Services
             if (update.Type != UpdateType.Message)
             {
                 return;
-            }
+            }       
             var message = update.Message;
             if (message.Type == MessageType.Text)
             {
-                await _botService.Client.SendTextMessageAsync(message.Chat.Id, $"You said: *{message.Text}*");
+                var chatId = message.Chat.Id;
+                var msgText = message.Text;
+                await _botService.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                await _botService.Client.SendTextMessageAsync(chatId, $"Somebody said: *{msgText}*");
+                _logger.LogInformation($"[Message]{message.From.Username}: {message.Text}");
             }
+            
+            
         }
     }
 }
