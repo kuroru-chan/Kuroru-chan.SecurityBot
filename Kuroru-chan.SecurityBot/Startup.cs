@@ -44,6 +44,7 @@ namespace KuroruChan.SecurityBot
             }
             //Add bot client
             services.AddSingleton<IBotService, BotService>();
+            services.AddSingleton<IAnonymousService, AnonymousService>();
             //Add configurations
             services.Configure<BotConfiguration>(Configuration.GetSection("BotConfiguration"));
         }
