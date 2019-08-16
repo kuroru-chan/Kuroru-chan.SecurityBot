@@ -10,8 +10,8 @@ FROM microsoft/dotnet:2.2-sdk AS build
 COPY . /src
 WORKDIR /src
 
-RUN dotnet restore Kuroru-chan.SecurityBot.csproj \
-    && dotnet publish -c Release -o /app
+RUN dotnet restore Kuroru-chan.SecurityBot.csproj
+RUN dotnet publish -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
