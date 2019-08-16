@@ -5,10 +5,6 @@ LABEL MAINTAINER="Samersions"
 
 WORKDIR /app
 EXPOSE 80
-ENV ASPNETCORE_ENVIRONMENT Production \
-BotConfiguration:BotToken "" \
-BotConfiguration:Socks5Host "" \
-BotConfiguration:Socks5Port 8080
 
 FROM microsoft/dotnet:2.2-sdk AS build
 COPY . /src
@@ -20,4 +16,5 @@ RUN dotnet restore Kuroru-chan.SecurityBot.csproj \
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app .
-ENTRYPOINT ["dotnet", "KuroruChan.SecurityBot.dll"]
+RUN echo "dotnet KuroruChan.SecurityBot.dll --enviroment=${ASPNETCORE_ENVIRONMENT}" > entrypoint.sh
+ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
