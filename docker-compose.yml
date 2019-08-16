@@ -1,0 +1,16 @@
+version: "3.4"
+
+services:
+  security_bot:
+    image: kuroru-chan.securitybot:${TAG:-latest}
+    build:
+      context: Kuroru-chan.SecurityBot/
+      dockerfile: Dockerfile 
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      BotConfiguration__BotToken: 535037917:AAFB2e0FiJ-UsWvYVdH91NktJ1lJ6VF49pw
+      BotConfiguration__Socks5Host: 192.168.1.12
+      BotConfiguration__Socks5Port: 8080
+    restart: unless-stopped
+    container_name: kuroru-chan-securitybot
+  
